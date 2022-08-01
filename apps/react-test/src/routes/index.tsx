@@ -1,5 +1,6 @@
 import {lazy} from 'react'
 import {RouteObject} from 'react-router-dom'
+import {CONSTANTS} from 'public/constants'
 
 const MainLayout = lazy(() => import('layouts/main-layout/Index'))
 const Main = lazy(() => import('pages/Main'))
@@ -14,7 +15,15 @@ export const routes: RouteObject[] = [
       },
       {
         element: <Sign />,
-        path: 'sign',
+        path: CONSTANTS.PATH_SIGN_IN,
+      },
+      {
+        element: <Sign />,
+        path: CONSTANTS.PATH_SIGN_UP,
+      },
+      {
+        element: <Sign />,
+        path: CONSTANTS.PATH_PASSWORD,
       },
     ],
     element: <MainLayout />,

@@ -7,24 +7,18 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "src/*": [
-        "src/*"
-      ],
-      "components/*": [
-        "src/components/*"
-      ],
-      "pages/*": [
-        "src/pages/*"
-      ],
-      "hooks/*": [
-        "src/hooks/*"
-      ],
-      "layouts/*": [
-        "src/layouts/*"
-      ],
-      "store/*": [
-        "src/store/*"
-      ]
+      "src/*": ["src/*"],
+      "components/*": ["src/components/*"],
+      "pages/*": ["src/pages/*"],
+      "hooks/*": ["src/hooks/*"],
+      "layouts/*": ["src/layouts/*"],
+      "store/*": ["src/store/*"],
+      "assets/*": ["src/assets/*"],
+      "api/*": ["src/api/*"],
+      "config/*": ["src/config/*"],
+      "public/*": ["src/public/*"],
+      "utils/*": ["src/utils/*"],
+      "lib/*": ["src/lib/*"]
     }
   },
   "ts-node": {
@@ -33,13 +27,6 @@
       "module": "CommonJS"
     }
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "auto-imports.d.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
-
+  "include": ["src/**/*.ts", "src/**/*.tsx", "auto-imports.d.ts"],
+  "exclude": ["node_modules"]
 }

@@ -9,7 +9,6 @@ const Routes = () => {
 export const Root: FC = () => {
   return (
     <>
-      <span>root</span>
       <Router>
         <Suspense>
           <Routes />

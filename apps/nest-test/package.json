@@ -8,24 +8,24 @@
     "start": "PORT=3000 node dist/main.js"
   },
   "dependencies": {
-    "@nestjs/common": "^8.4.5",
-    "@nestjs/config": "^2.1.0",
-    "@nestjs/core": "^8.4.5",
-    "@nestjs/platform-express": "^8.0.0",
-    "@nestjs/typeorm": "^8.1.2",
+    "@nestjs/common": "^8.4.7",
+    "@nestjs/config": "^2.2.0",
+    "@nestjs/core": "^8.4.7",
+    "@nestjs/platform-express": "^8.4.7",
+    "@nestjs/typeorm": "^8.1.4",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.5.5",
+    "rxjs": "^7.5.6",
     "tslib": "^2.4.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^8.2.6",
+    "@nestjs/cli": "^8.2.8",
     "@nestjs/schematics": "^8.0.11",
-    "@nestjs/testing": "^8.4.6",
-    "sqlite3": "^5.0.8",
-    "supertest": "^6.2.3",
-    "ts-loader": "^9.2.3",
-    "typescript": "^4.6.2",
-    "vite": "^2.9.12",
+    "@nestjs/testing": "^8.4.7",
+    "sqlite3": "^5.0.10",
+    "supertest": "^6.2.4",
+    "ts-loader": "^9.3.1",
+    "typescript": "^4.7.4",
+    "vite": "^2.9.14",
     "vite-plugin-node": "^1.0.0",
     "vite-tsconfig-paths": "^3.5.0"
   }
