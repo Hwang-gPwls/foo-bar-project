@@ -8,8 +8,8 @@ import {Buttons} from 'pages/types'
 export const MainPage: FC = () => {
   const [btnDatas, setBtnDatas] = useState<Buttons[]>([])
 
-  const onClick = (e) => {
-    if (e.target.id === 'signOut') {
+  const onClick = (element) => {
+    if (element.target.id === 'signOut') {
       localStorage.clear()
       window.location.reload()
     }

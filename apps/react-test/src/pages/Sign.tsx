@@ -1,82 +1,115 @@
-import {useState, useEffect} from 'react'
-import {useForm, SubmitHandler, FormProvider} from 'react-hook-form'
+import {useEffect, useState} from 'react'
+import {FormProvider, SubmitHandler, useForm} from 'react-hook-form'
 import {useLocation, useNavigate} from 'react-router-dom'
 import styled from 'styled-components'
+import {toast, ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 import {restAuthSignIn, restAuthSignUp, restAuthUpdatePassword} from 'api/sign'
+import {Inputs, RestSignUpReq} from 'pages/types'
+import {CONSTANTS} from 'public/constants'
 import INPUTS from 'public/data'
 import crypto from 'utils/crypto'
 import jwt from 'utils/jwt'
-import {CONSTANTS} from 'public/constants'
-import {Inputs, RestSignUpReq} from 'pages/types'
 
-import InputText from 'components/InputText'
+import {InputText} from 'components/InputText'
 import {Button} from 'components/Button'
-import {ToastMessage} from 'components/ToastMessage'
+import {Loading} from 'components/Loading'
+
+const openToast = (message: string) => {
+  toast.error(message, {
+    autoClose: 5000,
+    hideProgressBar: true,
+    pauseOnHover: false,
+    position: toast.POSITION.TOP_CENTER,
+    theme: 'dark',
+  })
+}
 
 export const SignPage: FPC = () => {
-  const {pathname} = useLocation()
-  const [curPath, setCurPath] = useState<string>()
-  const [btnTitle, setBtnTitle] = useState<string>()
+  const locationHook = useLocation()
+  const methods = useForm()
+
+  const [loading, setLoading] = useState(false)
+  const [pathName, setPathName] = useState<string>('')
   const [inputDatas, setInputDatas] = useState<Inputs[]>([])
-  const [error, setError] = useState<string>('')
 
   const navigate = useNavigate()
-
-  const methods = useForm()
 
   const onSubmit: SubmitHandler<RestSignUpReq> = async (data) => {
     console.log(data)
     const cryptoPassword = await crypto.cryptoPassword(data.password)
+    const cryptoNewPassword = await crypto.cryptoPassword(data.newPassword)
+    let errorMessage = ''
 
-    if (pathname.endsWith(CONSTANTS.PATH_SIGN_UP)) {
-      await restAuthSignUp(data.email, cryptoPassword).catch((err) => {
-        setError('tmp')
-      })
-    } else if (pathname.endsWith(CONSTANTS.PATH_SIGN_IN)) {
-      await restAuthSignIn(data.email, cryptoPassword).catch((err) => {
-        setError('tmp')
-      })
-    } else if (pathname.endsWith(CONSTANTS.PATH_PASSWORD)) {
-      const cryptoNewPassword = await crypto.cryptoPassword(data.newPassword)
+    setLoading(true)
 
-      await restAuthUpdatePassword(cryptoPassword, cryptoNewPassword).catch(
-        (err) => {
-          return <ToastMessage status="401" page="signUp" />
-        },
-      )
-      await jwt.clearLocalStorageItem()
+    switch (pathName) {
+      case CONSTANTS.PATH_SIGN_UP:
+        await restAuthSignUp(data.email, cryptoPassword).catch((error_) => {
+          if (error_.message.endsWith('409')) {
+            errorMessage = error_.message
+            openToast('잘못된 비밀번호 입니다.')
+          }
+        })
+        break
+      case CONSTANTS.PATH_SIGN_IN:
+        await restAuthSignIn(data.email, cryptoPassword).catch((error_) => {
+          if (error_.message.endsWith('401')) {
+            errorMessage = error_.message
+            openToast('잘못된 비밀번호 입니다.')
+          }
+        })
+        break
+      case CONSTANTS.PATH_PASSWORD:
+        await restAuthUpdatePassword(cryptoPassword, cryptoNewPassword).catch(
+          (error_) => {
+            if (error_.message.endsWith('401')) {
+              errorMessage = error_.message
+              openToast('잘못된 비밀번호 입니다.')
+            }
+          },
+        )
+        await jwt.clearLocalStorageItem()
+        break
     }
-    // navigate('/')
+
+    setLoading(false)
+
+    if (errorMessage === '') {
+      navigate('/')
+    }
   }
 
   useEffect(() => {
+    const splitUrl = locationHook?.pathname?.split('/') ?? null
+    const location = splitUrl?.length > 1 ? splitUrl[splitUrl.length - 1] : null
+    setPathName(location)
+
     if (inputDatas.length === 0) {
-      if (pathname.endsWith(CONSTANTS.PATH_SIGN_UP)) {
-        setCurPath(CONSTANTS.PATH_SIGN_UP)
-        setInputDatas(INPUTS.inputSignUp)
-        setBtnTitle('SIGN UP')
-      } else if (pathname.endsWith(CONSTANTS.PATH_SIGN_IN)) {
-        setCurPath(CONSTANTS.PATH_SIGN_IN)
-        setInputDatas(INPUTS.inputSignIn)
-        setBtnTitle('SIGN IN')
-      } else if (pathname.endsWith(CONSTANTS.PATH_PASSWORD)) {
-        setCurPath(CONSTANTS.PATH_PASSWORD)
-        setInputDatas(INPUTS.inputPassword)
-        setBtnTitle('UPDATE PASSWORD')
+      switch (pathName) {
+        case CONSTANTS.PATH_SIGN_UP:
+          setInputDatas(INPUTS.inputSignUp)
+          break
+        case CONSTANTS.PATH_SIGN_IN:
+          setInputDatas(INPUTS.inputSignIn)
+          break
+        case CONSTANTS.PATH_PASSWORD:
+          setInputDatas(INPUTS.inputPassword)
+          break
       }
     }
-    setError('')
-  }, [error, setError])
+  }, [pathName])
 
   return (
     <FormProvider {...methods}>
+      {loading ? <Loading /> : null}
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Container>
           {inputDatas &&
             inputDatas.map((data) => (
               <InputText
-                key={`${curPath}_${data.id}`}
+                key={`${pathName}_${data.id}`}
                 id={data.id}
                 description={data.description}
                 placeholder={data.placeholder}
@@ -84,15 +117,20 @@ export const SignPage: FPC = () => {
             ))}
           <Button
             id={'sign'}
-            title={btnTitle}
+            title={
+              pathName === CONSTANTS.PATH_SIGN_UP
+                ? 'SIGN UP'
+                : pathName === CONSTANTS.PATH_SIGN_IN
+                ? 'SIGN IN'
+                : 'UPDATE PASSWORD'
+            }
             type="submit"
             // isDisabled={errors.hasOwnProperty('error') ? true : false}
             isDisabled={false}
           />
         </Container>
       </form>
-      {error !== '' && <ToastMessage status="401" page="signUp" />}
-      {/* <ToastMessage status="401" page="signUp" /> */}
+      <ToastContainer limit={3} />
     </FormProvider>
   )
 }

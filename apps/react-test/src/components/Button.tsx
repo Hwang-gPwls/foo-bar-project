@@ -2,10 +2,10 @@ import styled from 'styled-components'
 
 interface ButtonProps {
   id: string
-  type: 'button' | 'submit' | 'reset'
-  title: string
   isDisabled: boolean
   onClick?: (e: any) => void
+  title: string
+  type: 'button' | 'submit' | 'reset'
 }
 
 export const Button: FC<ButtonProps> = ({

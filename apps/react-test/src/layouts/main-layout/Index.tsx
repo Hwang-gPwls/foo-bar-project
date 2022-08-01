@@ -1,6 +1,5 @@
 import {Outlet} from 'react-router-dom'
-import styled from 'styled-components'
-import {ThemeProvider} from 'styled-components'
+import styled, {ThemeProvider} from 'styled-components'
 import {theme} from 'styles/theme'
 import Logo from 'assets/images/logo.png'
 

@@ -37,8 +37,8 @@ export const restAuthUpdatePassword = async (
     .patch(
       `${API_ENDPOINT}/auth/update-password`,
       {
-        password,
         newPassword,
+        password,
       },
       {
         headers: {

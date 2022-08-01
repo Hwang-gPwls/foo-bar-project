@@ -1,14 +1,14 @@
-import jwt_decode from 'jwt-decode'
+import jwtDecode from 'jwt-decode'
 
 interface IJwt {
   email: string
-  iat: number
   exp: number
+  iat: number
 }
 
 const checkIsExpiration = async () => {
   const token = localStorage.getItem('token')
-  const decoded: IJwt = jwt_decode(token)
+  const decoded: IJwt = jwtDecode(token)
 
   const now = Math.floor(new Date().getTime() / 1000)
 
@@ -16,14 +16,14 @@ const checkIsExpiration = async () => {
     localStorage.removeItem('token')
 
     return true
-  } else {
-    return false
   }
+
+  return false
 }
 
 const returnEmail = async () => {
   const token = localStorage.getItem('token')
-  const decoded: IJwt = jwt_decode(token)
+  const decoded: IJwt = jwtDecode(token)
 
   return decoded.email
 }
@@ -42,7 +42,7 @@ const clearLocalStorageItem = () => {
 
 export default {
   checkIsExpiration,
-  returnEmail,
-  getLocalStorageItem,
   clearLocalStorageItem,
+  getLocalStorageItem,
+  returnEmail,
 }

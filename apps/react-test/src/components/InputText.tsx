@@ -2,13 +2,16 @@ import styled from 'styled-components'
 import {useFormContext} from 'react-hook-form'
 import {Inputs} from 'pages/types'
 
-const InputText = ({id, description, placeholder, errors}: Inputs) => {
+export const InputText: FC<Inputs> = ({
+  id,
+  description,
+  placeholder,
+}: Inputs) => {
   const {register} = useFormContext()
 
   return (
     <Container>
       <input
-        name={name}
         type={id.toUpperCase().includes('PASSWORD') ? 'password' : 'text'}
         className="input"
         placeholder={placeholder}
@@ -40,4 +43,3 @@ const Container = styled.div`
     font-size: 1.1vw;
   }
 `
-export default InputText

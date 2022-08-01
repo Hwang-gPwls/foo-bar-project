@@ -1,11 +1,11 @@
-import {FieldErrorsImpl, DeepRequired, FieldValues} from 'react-hook-form'
+import {DeepRequired, FieldErrorsImpl, FieldValues} from 'react-hook-form'
 
 export interface Inputs {
-  id: string
   description: string
-  placeholder: string
   errors?: FieldErrorsImpl<DeepRequired<FieldValues>>
+  id: string
   onChange?: any
+  placeholder: string
 }
 
 export interface Buttons {
@@ -16,6 +16,6 @@ export interface Buttons {
 
 export interface RestSignUpReq {
   email: string
-  password: string
   newPassword: string
+  password: string
 }
