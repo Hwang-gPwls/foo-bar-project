@@ -3,30 +3,55 @@ import styled from 'styled-components'
 import validation from 'utils/sign-validation'
 import {useFormContext} from 'react-hook-form'
 import {Inputs} from 'pages/types'
+import {CONSTANTS} from 'public/constants'
 
 // eslint-disable-next-line solid/no-destructure
 export const InputText: FC<Inputs> = ({
   id,
   description,
   placeholder,
+  pathName,
+  name,
+  getHasErrors,
 }: Inputs) => {
   const {register} = useFormContext()
   const [values, setValues] = useState<object>({})
-  const [error, setError] = useState<object>({})
+  const [errors, setErrors] = useState<object>({})
+  const [isChanged, setIsChanged] = useState<Object>({
+    email: false,
+    password: false,
+    passwordConfirm: false,
+    newPassword: false,
+  })
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target)
     const {name, value} = event.target
     setValues({...values, [name]: value})
 
-    const SignValidationProps = {
-      email: '',
-      password: '',
-    }
-
-    setError(validation.signValidation(SignValidationProps))
-    debugger
+    setIsChanged({...isChanged, [name]: true})
   }
+
+  useEffect(() => {
+    switch (pathName) {
+      case CONSTANTS.PATH_SIGN_IN:
+        setErrors(validation.signInValidation(values))
+        break
+      case CONSTANTS.PATH_SIGN_UP:
+        setErrors(validation.signOnValidation(values))
+        break
+      case CONSTANTS.PATH_PASSWORD:
+        setErrors(validation.updatePasswordValidation(values))
+        break
+    }
+  }, [values])
+
+  useEffect(() => {
+    if (isChanged[id] === true && !errors[id]) {
+      getHasErrors({[id]: false})
+    } else {
+      getHasErrors({[id]: true})
+    }
+  }, [errors])
 
   return (
     <Container>
@@ -37,8 +62,16 @@ export const InputText: FC<Inputs> = ({
         {...register(id)}
         onChange={handleChange}
       />
-      <span className="text">{error[id]}</span>
-      <span className="text">{description}</span>
+      <div className="text">
+        {isChanged[id] === false
+          ? null
+          : !errors[id]
+          ? `올바른 ${name}입니다.`
+          : errors[id]}
+      </div>
+      {isChanged[id] === false ? (
+        <div className="text">{description}</div>
+      ) : null}
     </Container>
   )
 }

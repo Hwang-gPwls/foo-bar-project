@@ -2,12 +2,14 @@ const inputSignIn = [
   {
     description: '이메일을 입력하세요',
     id: 'email',
+    name: '이메일',
     placeholder: 'Email',
   },
   {
     description:
       '6글자이상 1개 이상 기호 포함 대소문자 숫자 1개 이상 포함 패스워드를 입력하세요',
     id: 'password',
+    name: '패스워드',
     placeholder: 'Password',
   },
 ]
@@ -16,17 +18,20 @@ const inputSignUp = [
   {
     description: '이메일을 입력하세요',
     id: 'email',
+    name: '이메일',
     placeholder: 'Email',
   },
   {
     description:
       '6글자이상 1개 이상 기호 포함 대소문자 숫자 1개 이상 포함 패스워드를 입력하세요',
     id: 'password',
+    name: '패스워드',
     placeholder: 'Password',
   },
   {
     description: '확인을 위해 한번더 입력해 주세요',
     id: 'passwordConfirm',
+    name: '패스워드',
     placeholder: 'Write your password again',
   },
 ]
@@ -35,17 +40,20 @@ const inputPassword = [
   {
     description: '기존 패스워드를 입력하세요',
     id: 'password',
+    name: '패스워드',
     placeholder: 'Password',
   },
   {
     description:
       '6글자 이상 1개 이상 기호 포함 대소문자 숫자 1개 이상 포함 패스워드를 입력하세요',
     id: 'newPassword',
+    name: '패스워드',
     placeholder: 'New Password',
   },
   {
     description: '다시 한 번 패스워드를 입력해주세요',
-    id: 'newPasswordCinfirm',
+    id: 'PasswordConfirm',
+    name: '패스워드',
     placeholder: 'New Password',
   },
 ]

@@ -6,6 +6,9 @@ export interface Inputs {
   id: string
   onChange?: any
   placeholder: string
+  pathName?: string
+  name: string
+  getHasErrors: any
 }
 
 export interface Buttons {

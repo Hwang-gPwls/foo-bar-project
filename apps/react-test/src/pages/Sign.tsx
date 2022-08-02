@@ -30,14 +30,47 @@ export const SignPage: FPC = () => {
   const locationHook = useLocation()
   const methods = useForm()
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isSubmit, setIsSubmit] = useState<boolean>(false)
   const [pathName, setPathName] = useState<string>('')
   const [inputDatas, setInputDatas] = useState<Inputs[]>([])
+  const [hasErrors, setHasErrors] = useState<object[]>([])
 
   const navigate = useNavigate()
 
+  const getValidationErrors = (error: any) => {
+    let copyHasErrors: object[] = [...hasErrors]
+    const key = Object.keys(error)[0]
+    if (
+      copyHasErrors.length !== 0 &&
+      copyHasErrors.filter((data) => data.hasOwnProperty(key)).length !== 0
+    ) {
+      copyHasErrors.map((data) => {
+        if (Object.keys(data)[0] === key) {
+          data[key] = error[key]
+        }
+      })
+    } else {
+      copyHasErrors.push(error)
+    }
+
+    setHasErrors(copyHasErrors)
+  }
+
+  useEffect(() => {
+    if (hasErrors.length !== 0 && hasErrors.length === inputDatas.length) {
+      if (
+        hasErrors.filter((error) => Object.values(error)[0] === true).length ===
+        0
+      ) {
+        setIsSubmit(true)
+      } else {
+        setIsSubmit(false)
+      }
+    }
+  }, [hasErrors])
+
   const onSubmit: SubmitHandler<RestSignUpReq> = async (data) => {
-    console.log(data)
     const cryptoPassword = await crypto.cryptoPassword(data.password)
     const cryptoNewPassword = await crypto.cryptoPassword(data.newPassword)
     let errorVal = null
@@ -63,7 +96,6 @@ export const SignPage: FPC = () => {
 
       navigate('/')
     } catch (error) {
-      debugger
       errorVal = Datas.errorMessages.filter(
         (errors) =>
           errors.path === pathName && error.message.endsWith(errors.code),
@@ -107,6 +139,9 @@ export const SignPage: FPC = () => {
                 id={data.id}
                 description={data.description}
                 placeholder={data.placeholder}
+                pathName={pathName}
+                name={data.name}
+                getHasErrors={getValidationErrors}
               />
             ))}
           <Button
@@ -119,8 +154,8 @@ export const SignPage: FPC = () => {
                 : 'UPDATE PASSWORD'
             }
             type="submit"
-            // isDisabled={errors.hasOwnProperty('error') ? true : false}
-            isDisabled={false}
+            isDisabled={isSubmit === true ? false : true}
+            //isDisabled={true}
           />
         </Container>
       </form>
