@@ -1,7 +1,6 @@
 import axios from 'axios'
 import {API_ENDPOINT} from 'config/config'
 import jwt from 'utils/jwt'
-import {ToastMessage} from 'components/ToastMessage'
 
 export const restAuthSignUp = async (email: string, password: string) => {
   await axios

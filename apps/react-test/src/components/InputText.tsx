@@ -1,26 +1,32 @@
 import {useEffect, useState} from 'react'
 import styled from 'styled-components'
+import validation from 'utils/sign-validation'
 import {useFormContext} from 'react-hook-form'
 import {Inputs} from 'pages/types'
 
+// eslint-disable-next-line solid/no-destructure
 export const InputText: FC<Inputs> = ({
   id,
   description,
   placeholder,
 }: Inputs) => {
-  const {
-    register,
-    formState: {errors},
-  } = useFormContext()
+  const {register} = useFormContext()
+  const [values, setValues] = useState<object>({})
+  const [error, setError] = useState<object>({})
 
-  const [errorMessage, setErrorMessage] = useState<string>('')
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(event.target)
+    const {name, value} = event.target
+    setValues({...values, [name]: value})
 
-  useEffect(() => {
-    console.log(errors)
-    // if (errors.email.type.toString() === 'required') {
-    //   alert('test')
-    // }
-  }, [errors])
+    const SignValidationProps = {
+      email: '',
+      password: '',
+    }
+
+    setError(validation.signValidation(SignValidationProps))
+    debugger
+  }
 
   return (
     <Container>
@@ -28,11 +34,11 @@ export const InputText: FC<Inputs> = ({
         type={id.toUpperCase().includes('PASSWORD') ? 'password' : 'text'}
         className="input"
         placeholder={placeholder}
-        {...register(id, {
-          required: true,
-        })}
+        {...register(id)}
+        onChange={handleChange}
       />
-      <span className="description">{description}</span>
+      <span className="text">{error[id]}</span>
+      <span className="text">{description}</span>
     </Container>
   )
 }
@@ -51,7 +57,8 @@ const Container = styled.div`
     outline-offset: 2px;
   }
 
-  .description {
+  .text {
+    margin-left: 0.7rem;
     font-size: 1.1vw;
   }
 `

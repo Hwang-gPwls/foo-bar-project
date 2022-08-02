@@ -8,6 +8,7 @@ interface ButtonProps {
   type: 'button' | 'submit' | 'reset'
 }
 
+// eslint-disable-next-line solid/no-destructure
 export const Button: FC<ButtonProps> = ({
   id,
   type = 'submit',

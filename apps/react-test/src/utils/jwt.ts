@@ -10,7 +10,9 @@ const checkIsExpiration = async () => {
   const token = localStorage.getItem('token')
   const decoded: IJwt = jwtDecode(token)
 
-  const now = Math.floor(new Date().getTime() / 1000)
+  const numDivide = 1000
+  // eslint-disable-next-line unicorn/prefer-date-now
+  const now = Math.floor(new Date().getTime() / numDivide)
 
   if (decoded.exp < now) {
     localStorage.removeItem('token')
@@ -29,13 +31,13 @@ const returnEmail = async () => {
 }
 
 const getLocalStorageItem = () => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     resolve(localStorage.getItem('token'))
   })
 }
 
 const clearLocalStorageItem = () => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     resolve(localStorage.clear())
   })
 }

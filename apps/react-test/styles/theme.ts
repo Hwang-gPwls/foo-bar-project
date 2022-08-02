@@ -1,12 +1,12 @@
+/* eslint-disable no-magic-numbers */
 import {DefaultTheme} from 'styled-components'
 
 export const theme: DefaultTheme = {
   color: {
     black: '#0000',
-    gray: '#A9AFBC',
     darkgray: '#2a303b',
+    gray: '#A9AFBC',
     white: '#fff',
-    white_opacity: 'ffffffb7',
   },
 }
 

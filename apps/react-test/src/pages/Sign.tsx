@@ -5,12 +5,12 @@ import styled from 'styled-components'
 import {toast, ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-import {restAuthSignIn, restAuthSignUp, restAuthUpdatePassword} from 'api/sign'
 import {Inputs, RestSignUpReq} from 'pages/types'
 import {CONSTANTS} from 'public/constants'
-import INPUTS from 'public/data'
 import crypto from 'utils/crypto'
 import jwt from 'utils/jwt'
+import service from 'services/sign'
+import Datas from 'public/data'
 
 import {InputText} from 'components/InputText'
 import {Button} from 'components/Button'
@@ -30,7 +30,7 @@ export const SignPage: FPC = () => {
   const locationHook = useLocation()
   const methods = useForm()
 
-  const [loading, setLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [pathName, setPathName] = useState<string>('')
   const [inputDatas, setInputDatas] = useState<Inputs[]>([])
 
@@ -40,45 +40,39 @@ export const SignPage: FPC = () => {
     console.log(data)
     const cryptoPassword = await crypto.cryptoPassword(data.password)
     const cryptoNewPassword = await crypto.cryptoPassword(data.newPassword)
-    let errorMessage = ''
+    let errorVal = null
 
-    setLoading(true)
+    setIsLoading(true)
 
-    switch (pathName) {
-      case CONSTANTS.PATH_SIGN_UP:
-        await restAuthSignUp(data.email, cryptoPassword).catch((error_) => {
-          if (error_.message.endsWith('409')) {
-            errorMessage = error_.message
-            openToast('잘못된 비밀번호 입니다.')
-          }
-        })
-        break
-      case CONSTANTS.PATH_SIGN_IN:
-        await restAuthSignIn(data.email, cryptoPassword).catch((error_) => {
-          if (error_.message.endsWith('401')) {
-            errorMessage = error_.message
-            openToast('잘못된 비밀번호 입니다.')
-          }
-        })
-        break
-      case CONSTANTS.PATH_PASSWORD:
-        await restAuthUpdatePassword(cryptoPassword, cryptoNewPassword).catch(
-          (error_) => {
-            if (error_.message.endsWith('401')) {
-              errorMessage = error_.message
-              openToast('잘못된 비밀번호 입니다.')
-            }
-          },
-        )
-        await jwt.clearLocalStorageItem()
-        break
-    }
+    try {
+      switch (pathName) {
+        case CONSTANTS.PATH_SIGN_IN:
+          await service.getSignInStatus(data.email, cryptoPassword)
+          break
+        case CONSTANTS.PATH_SIGN_UP:
+          await service.getSignUpStatus(data.email, cryptoPassword)
+          break
+        case CONSTANTS.PATH_PASSWORD:
+          await service.getUpdatePasswordStatus(
+            cryptoPassword,
+            cryptoNewPassword,
+          )
+          await jwt.clearLocalStorageItem()
+          break
+      }
 
-    setLoading(false)
-
-    if (errorMessage === '') {
       navigate('/')
+    } catch (error) {
+      debugger
+      errorVal = Datas.errorMessages.filter(
+        (errors) =>
+          errors.path === pathName && error.message.endsWith(errors.code),
+      )
+
+      openToast(errorVal[0].message)
     }
+
+    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -89,13 +83,13 @@ export const SignPage: FPC = () => {
     if (inputDatas.length === 0) {
       switch (pathName) {
         case CONSTANTS.PATH_SIGN_UP:
-          setInputDatas(INPUTS.inputSignUp)
+          setInputDatas(Datas.inputSignUp)
           break
         case CONSTANTS.PATH_SIGN_IN:
-          setInputDatas(INPUTS.inputSignIn)
+          setInputDatas(Datas.inputSignIn)
           break
         case CONSTANTS.PATH_PASSWORD:
-          setInputDatas(INPUTS.inputPassword)
+          setInputDatas(Datas.inputPassword)
           break
       }
     }
@@ -103,7 +97,7 @@ export const SignPage: FPC = () => {
 
   return (
     <FormProvider {...methods}>
-      {loading ? <Loading /> : null}
+      {isLoading ? <Loading /> : null}
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Container>
           {inputDatas &&

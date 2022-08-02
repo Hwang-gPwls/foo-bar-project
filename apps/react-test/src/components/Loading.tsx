@@ -4,10 +4,10 @@ export const Loading: FC = () => {
   return (
     <Container>
       <Loader>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
+        <div />
+        <div />
+        <div />
+        <div />
       </Loader>
     </Container>
   )

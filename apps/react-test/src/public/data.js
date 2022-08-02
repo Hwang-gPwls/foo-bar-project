@@ -1,69 +1,81 @@
 const inputSignIn = [
   {
-    id: 'email',
     description: '이메일을 입력하세요',
+    id: 'email',
     placeholder: 'Email',
   },
   {
-    id: 'password',
     description:
       '6글자이상 1개 이상 기호 포함 대소문자 숫자 1개 이상 포함 패스워드를 입력하세요',
+    id: 'password',
     placeholder: 'Password',
   },
 ]
 
 const inputSignUp = [
   {
-    id: 'email',
     description: '이메일을 입력하세요',
+    id: 'email',
     placeholder: 'Email',
   },
   {
-    id: 'password',
     description:
       '6글자이상 1개 이상 기호 포함 대소문자 숫자 1개 이상 포함 패스워드를 입력하세요',
+    id: 'password',
     placeholder: 'Password',
   },
   {
-    id: 'passwordConfirm',
     description: '확인을 위해 한번더 입력해 주세요',
+    id: 'passwordConfirm',
     placeholder: 'Write your password again',
   },
 ]
 
 const inputPassword = [
   {
-    id: 'password',
     description: '기존 패스워드를 입력하세요',
+    id: 'password',
     placeholder: 'Password',
   },
   {
-    id: 'newPassword',
     description:
       '6글자 이상 1개 이상 기호 포함 대소문자 숫자 1개 이상 포함 패스워드를 입력하세요',
+    id: 'newPassword',
     placeholder: 'New Password',
   },
   {
-    id: 'newPasswordCinfirm',
     description: '다시 한 번 패스워드를 입력해주세요',
+    id: 'newPasswordCinfirm',
     placeholder: 'New Password',
   },
 ]
 
 const buttonLogOut = [
-  {id: 'signIn', title: 'SIGN IN', path: '/sign-in'},
-  {id: 'signUp', title: 'SIGN UP', path: '/sign-up'},
+  {id: 'signIn', path: '/sign-in', title: 'SIGN IN'},
+  {id: 'signUp', path: '/sign-up', title: 'SIGN UP'},
 ]
 
 const buttonLogIn = [
-  {id: 'signOut', title: 'SIGN OUT', path: '/'},
-  {id: 'password', title: 'UPDATE PASSWORD', path: '/password'},
+  {id: 'signOut', path: '/', title: 'SIGN OUT'},
+  {id: 'password', path: '/password', title: 'UPDATE PASSWORD'},
+]
+
+const errorMessages = [
+  {code: '401', message: '잘못된 비밀번호 입니다.', path: 'sign-in'},
+  {code: '404', message: '존재하지 않는 계정입니다', path: 'sign-in'},
+  {code: '409', message: '이미 회원가입 하셨습니다.', path: 'sign-up'},
+  {
+    code: '401',
+    message: '기존 비밀번호를 잘못 입력하셨습니다.',
+    path: 'password',
+  },
 ]
 
 export default {
-  inputSignIn,
-  inputSignUp,
-  inputPassword,
   buttonLogIn,
   buttonLogOut,
+  errorMessages,
+  inputPassword,
+  inputSignIn,
+  inputSignUp,
 }

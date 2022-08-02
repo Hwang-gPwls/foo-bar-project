@@ -18,7 +18,8 @@
       "config/*": ["src/config/*"],
       "public/*": ["src/public/*"],
       "utils/*": ["src/utils/*"],
-      "lib/*": ["src/lib/*"]
+      "lib/*": ["src/lib/*"],
+      "services/*": ["src/services/*"]
     }
   },
   "ts-node": {
@@ -27,6 +28,11 @@
       "module": "CommonJS"
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "auto-imports.d.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "auto-imports.d.ts",
+    "src/public/data.js"
+  ],
   "exclude": ["node_modules"]
 }
