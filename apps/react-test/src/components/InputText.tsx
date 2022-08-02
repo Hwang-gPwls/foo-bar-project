@@ -1,3 +1,4 @@
+import {useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {useFormContext} from 'react-hook-form'
 import {Inputs} from 'pages/types'
@@ -7,7 +8,19 @@ export const InputText: FC<Inputs> = ({
   description,
   placeholder,
 }: Inputs) => {
-  const {register} = useFormContext()
+  const {
+    register,
+    formState: {errors},
+  } = useFormContext()
+
+  const [errorMessage, setErrorMessage] = useState<string>('')
+
+  useEffect(() => {
+    console.log(errors)
+    // if (errors.email.type.toString() === 'required') {
+    //   alert('test')
+    // }
+  }, [errors])
 
   return (
     <Container>
@@ -19,7 +32,6 @@ export const InputText: FC<Inputs> = ({
           required: true,
         })}
       />
-
       <span className="description">{description}</span>
     </Container>
   )

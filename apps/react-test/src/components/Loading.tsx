@@ -3,30 +3,23 @@ import styled, {keyframes} from 'styled-components'
 export const Loading: FC = () => {
   return (
     <Container>
-      <Spinner>
-        <circle cx="50%" cy="50%" r="25" />
-      </Spinner>
+      <Loader>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </Loader>
     </Container>
   )
 }
 
-const LoadingSpin = keyframes`
-100% {
+const Load = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
     transform: rotate(360deg);
-}
-`
-const LoadingCircle = keyframes`
-0% {
-    stroke-dashoffset: 157;
-}
-
-75% {
-    stroke-dashoffset: -147;
-}
-
-100% {
-    stroke-dashoffset: -157;
-}
+  }
 `
 
 const Container = styled.div`
@@ -44,17 +37,35 @@ const Container = styled.div`
   transition: 0.5s;
 `
 
-const Spinner = styled.svg`
-  width: 54px;
-  height: 54px;
-  animation: ${LoadingCircle} 3s infinite;
+const Loader = styled.div`
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
 
-  circle {
-    stroke: #000000;
-    stroke-width: 4;
-    stroke-dasharray: 157;
-    stroke-dashoffset: 0;
-    fill: transparent;
-    animation: ${LoadingSpin} 1s infinite;
+  div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border: 8px solid ${({theme}) => theme.color.darkgray};
+    border-radius: 50%;
+    animation: ${Load} 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: ${({theme}) => theme.color.darkgray} transparent transparent
+      transparent;
+
+    &:nth-child(1) {
+      animation-delay: -0.45s;
+    }
+
+    &:nth-child(2) {
+      animation-delay: -0.3s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: -0.15s;
+    }
   }
 `

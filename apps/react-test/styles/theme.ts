@@ -5,6 +5,8 @@ export const theme: DefaultTheme = {
     black: '#0000',
     gray: '#A9AFBC',
     darkgray: '#2a303b',
+    white: '#fff',
+    white_opacity: 'ffffffb7',
   },
 }
 
