@@ -12,7 +12,7 @@ export const InputText: FC<Inputs> = ({
   placeholder,
   pathName,
   name,
-  getHasErrors,
+  getErrorValues,
 }: Inputs) => {
   const {register} = useFormContext()
   const [values, setValues] = useState<object>({})
@@ -46,11 +46,8 @@ export const InputText: FC<Inputs> = ({
   }, [values])
 
   useEffect(() => {
-    if (isChanged[id] === true && !errors[id]) {
-      getHasErrors({[id]: false})
-    } else {
-      getHasErrors({[id]: true})
-    }
+    const hasError = errors[id] === null ? false : true
+    getErrorValues({id: id, hasError: hasError})
   }, [errors])
 
   return (

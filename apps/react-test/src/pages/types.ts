@@ -3,7 +3,7 @@ import {DeepRequired, FieldErrorsImpl, FieldValues} from 'react-hook-form'
 export interface Inputs {
   description: string
   errors?: FieldErrorsImpl<DeepRequired<FieldValues>>
-  getHasErrors: any
+  getErrorValues: any
   id: string
   name: string
   onChange?: any

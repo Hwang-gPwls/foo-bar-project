@@ -28,6 +28,13 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
+
+  .text {
+    width: 100%;
+    text-align: center;
+    margin: 3.2rem 0;
+    font-size: 1.7vw;
+  }
 `
 
 export default Error

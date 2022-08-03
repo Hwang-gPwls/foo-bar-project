@@ -27,35 +27,14 @@ const openToast = (message: string) => {
   })
 }
 
-const ReplaceArrayItem = (oldArray: object[], key: string, error: object) => {
-  for (const element of oldArray) {
-    if (Object.keys(element)[0] === key) {
-      element[key] = error[key]
-    }
-  }
-
-  return oldArray
-}
-
-const getPromiseData = () => {
-  const promise = jwt.getLocalStorageItem()
-  promise.then((appData) => {
-    return appData
-  })
-}
-
-const redirect = async (pathName) => {
-  const token: any = await getPromiseData()
-  const navigate = useNavigate()
-
-  if (!token && pathName === 'password') {
-    navigate('/error')
-  }
-}
-
 const callAPI = async (data, pathName) => {
   try {
+    const message = '입력한 패스워드가 일치하지 않습니다.'
+
     const cryptoPassword = await crypto.cryptoPassword(data.password)
+    const cryptoPasswordConfirm = await crypto.cryptoPassword(
+      data.passwordConfirm,
+    )
     let cryptoNewPassword = ''
 
     switch (pathName) {
@@ -63,10 +42,19 @@ const callAPI = async (data, pathName) => {
         await service.getSignInStatus(data.email, cryptoPassword)
         break
       case CONSTANTS.PATH_SIGN_UP:
+        if (cryptoPassword !== cryptoPasswordConfirm) {
+          alert(message)
+          return true
+        }
         await service.getSignUpStatus(data.email, cryptoPassword)
         break
       case CONSTANTS.PATH_PASSWORD:
         cryptoNewPassword = await crypto.cryptoPassword(data.newPassword)
+
+        if (cryptoNewPassword !== cryptoPasswordConfirm) {
+          alert(message)
+          return true
+        }
 
         await service.getUpdatePasswordStatus(cryptoNewPassword, cryptoPassword)
         await jwt.clearLocalStorageItem()
@@ -96,13 +84,18 @@ export const SignPage: FPC = () => {
   const [hasErrors, setHasErrors] = useState<object[]>([])
 
   const getValidationErrors = (error: any) => {
-    // eslint-disable-next-line prefer-destructuring
-    const key = Object.keys(error)[0]
+    const key = error.id
     let copyHasErrors: object[] = [...hasErrors]
 
-    // eslint-disable-next-line no-prototype-builtins
-    if (copyHasErrors.some((data) => data.hasOwnProperty(key))) {
-      copyHasErrors = ReplaceArrayItem(copyHasErrors, key, error)
+    const checkErrors = (element) => {
+      if (element.id === key) {
+        return true
+      }
+    }
+
+    if (copyHasErrors.some(checkErrors)) {
+      const elementIndex = copyHasErrors.findIndex((obj) => obj['id'] == key)
+      copyHasErrors[elementIndex]['hasError'] = error.hasError
     } else {
       copyHasErrors.push(error)
     }
@@ -112,7 +105,7 @@ export const SignPage: FPC = () => {
 
   useEffect(() => {
     const cntError = hasErrors.filter(
-      (error) => Object.values(error)[0] === true,
+      (error) => error['hasError'] === true,
     ).length
 
     if (
@@ -131,19 +124,30 @@ export const SignPage: FPC = () => {
     const location = splitUrl?.length > 1 ? splitUrl[splitUrl.length - 1] : null
     setPathName(location)
 
-    if (inputDatas.length === 0) {
-      switch (pathName) {
-        case CONSTANTS.PATH_SIGN_UP:
-          setInputDatas(Datas.inputSignUp)
-          break
-        case CONSTANTS.PATH_SIGN_IN:
-          setInputDatas(Datas.inputSignIn)
-          break
-        case CONSTANTS.PATH_PASSWORD:
-          setInputDatas(Datas.inputPassword)
-          break
+    const promise = async () => {
+      await jwt.getLocalStorageItem()
+      jwt.getLocalStorageItem().then((appData) => {
+        if (!appData && pathName === 'password') {
+          navigate('/error')
+        }
+      })
+
+      if (inputDatas.length === 0) {
+        switch (pathName) {
+          case CONSTANTS.PATH_SIGN_UP:
+            setInputDatas(Datas.inputSignUp)
+            break
+          case CONSTANTS.PATH_SIGN_IN:
+            setInputDatas(Datas.inputSignIn)
+            break
+          case CONSTANTS.PATH_PASSWORD:
+            setInputDatas(Datas.inputPassword)
+            break
+        }
       }
     }
+
+    promise().catch(console.error)
   }, [pathName])
 
   const onSubmit: SubmitHandler<RestSignUpReq> = async (data) => {
@@ -172,7 +176,7 @@ export const SignPage: FPC = () => {
                 placeholder={data.placeholder}
                 pathName={pathName}
                 name={data.name}
-                getHasErrors={getValidationErrors}
+                getErrorValues={getValidationErrors}
               />
             ))}
           <Button

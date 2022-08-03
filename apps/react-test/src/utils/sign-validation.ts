@@ -48,16 +48,6 @@ const passwordValidation = (password) => {
   return message
 }
 
-const passwordConfirmValidation = (password, passwordConfirm) => {
-  let message: string | null = null
-
-  if (password !== passwordConfirm) {
-    message = '비밀번호와 같지 않습니다.'
-  }
-
-  return message
-}
-
 const signOnValidation = ({
   email,
   password,
@@ -89,16 +79,12 @@ const updatePasswordValidation = ({
 
   errors.password = passwordValidation(password)
   errors.newPassword = passwordValidation(newPassword)
-  errors.passwordConfirm = passwordConfirmValidation(
-    newPassword,
-    passwordConfirm,
-  )
+  errors.passwordConfirm = passwordValidation(passwordConfirm)
 
   return errors
 }
 
 export default {
-  passwordConfirmValidation,
   signInValidation,
   signOnValidation,
   updatePasswordValidation,

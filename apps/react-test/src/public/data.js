@@ -77,6 +77,11 @@ const errorMessages = [
     message: '기존 비밀번호를 잘못 입력하셨습니다.',
     path: 'password',
   },
+  {
+    code: '404',
+    message: '없는 사용자 입니다.',
+    path: 'password',
+  },
 ]
 
 export default {
