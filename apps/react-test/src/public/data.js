@@ -52,7 +52,7 @@ const inputPassword = [
   },
   {
     description: '다시 한 번 패스워드를 입력해주세요',
-    id: 'PasswordConfirm',
+    id: 'passwordConfirm',
     name: '패스워드',
     placeholder: 'New Password',
   },

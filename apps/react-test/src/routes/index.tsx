@@ -5,6 +5,7 @@ import {CONSTANTS} from 'public/constants'
 const MainLayout = lazy(() => import('layouts/main-layout/Index'))
 const Main = lazy(() => import('pages/Main'))
 const Sign = lazy(() => import('pages/Sign'))
+const Error = lazy(() => import('pages/Error'))
 
 export const routes: RouteObject[] = [
   {
@@ -24,6 +25,10 @@ export const routes: RouteObject[] = [
       {
         element: <Sign />,
         path: CONSTANTS.PATH_PASSWORD,
+      },
+      {
+        element: <Error />,
+        path: CONSTANTS.PATH_ERROR,
       },
     ],
     element: <MainLayout />,

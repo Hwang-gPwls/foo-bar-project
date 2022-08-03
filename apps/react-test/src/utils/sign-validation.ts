@@ -1,13 +1,15 @@
+/* eslint-disable require-unicode-regexp */
 type SignValidationProps = {
   email?: string | null
+  newPassword?: string | null
   password?: string | null
   passwordConfirm?: string | null
-  newPassword?: string | null
 }
 
 const emailValidation = (email) => {
   const regexrEmail =
-    /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/
+    // eslint-disable-next-line prefer-named-capture-group, unicorn/no-unsafe-regex
+    /^[\dA-Za-z]([._-]?[\dA-Za-z])*@[\dA-Za-z]([._-]?[\dA-Za-z])*\.[A-Za-z]{2,3}$/
 
   let message: string | null = null
 
@@ -21,16 +23,17 @@ const emailValidation = (email) => {
 }
 
 const passwordValidation = (password) => {
-  const regexrNumber = /[0-9]/
+  const regexrNumber = /\d/
   const regexrLower = /[a-z]/
   const regexrUpper = /[A-Z]/
-  const regexrSpecial = /[~!@#$%^&*()_+|<>?:{}]/
+  const regexrSpecial = /[!#$%&()*+:<>?@^_{|}~]/
+  const maxLength = 6
 
   let message: string | null = null
 
   if (password === '') {
     message = '비밀번호가 입력되지 않았습니다.'
-  } else if (password && password.length < 6) {
+  } else if (password && password.length < maxLength) {
     message = '6자 이상 이여야 합니다.'
   } else if (!regexrNumber.test(password)) {
     message = '1개 이상의 숫자를 포함 하여야 합니다.'
@@ -78,17 +81,25 @@ const signInValidation = ({email, password}: SignValidationProps) => {
 }
 
 const updatePasswordValidation = ({
-  email,
+  password,
   newPassword,
   passwordConfirm,
 }: SignValidationProps) => {
   const errors: SignValidationProps = {}
 
-  errors.email = emailValidation(email)
+  errors.password = passwordValidation(password)
   errors.newPassword = passwordValidation(newPassword)
-  errors.passwordConfirm = passwordValidation(passwordConfirm)
+  errors.passwordConfirm = passwordConfirmValidation(
+    newPassword,
+    passwordConfirm,
+  )
 
   return errors
 }
 
-export default {signOnValidation, signInValidation, updatePasswordValidation}
+export default {
+  passwordConfirmValidation,
+  signInValidation,
+  signOnValidation,
+  updatePasswordValidation,
+}

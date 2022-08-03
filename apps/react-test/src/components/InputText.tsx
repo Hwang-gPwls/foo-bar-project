@@ -17,11 +17,11 @@ export const InputText: FC<Inputs> = ({
   const {register} = useFormContext()
   const [values, setValues] = useState<object>({})
   const [errors, setErrors] = useState<object>({})
-  const [isChanged, setIsChanged] = useState<Object>({
+  const [isChanged, setIsChanged] = useState<object>({
     email: false,
+    newPassword: false,
     password: false,
     passwordConfirm: false,
-    newPassword: false,
   })
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,9 +65,9 @@ export const InputText: FC<Inputs> = ({
       <div className="text">
         {isChanged[id] === false
           ? null
-          : !errors[id]
-          ? `올바른 ${name}입니다.`
-          : errors[id]}
+          : errors[id]
+          ? errors[id]
+          : `올바른 ${name}입니다.`}
       </div>
       {isChanged[id] === false ? (
         <div className="text">{description}</div>

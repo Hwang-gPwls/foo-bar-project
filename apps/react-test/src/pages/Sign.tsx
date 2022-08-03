@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import {useEffect, useState} from 'react'
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form'
 import {useLocation, useNavigate} from 'react-router-dom'
@@ -26,8 +27,66 @@ const openToast = (message: string) => {
   })
 }
 
+const ReplaceArrayItem = (oldArray: object[], key: string, error: object) => {
+  for (const element of oldArray) {
+    if (Object.keys(element)[0] === key) {
+      element[key] = error[key]
+    }
+  }
+
+  return oldArray
+}
+
+const getPromiseData = () => {
+  const promise = jwt.getLocalStorageItem()
+  promise.then((appData) => {
+    return appData
+  })
+}
+
+const redirect = async (pathName) => {
+  const token: any = await getPromiseData()
+  const navigate = useNavigate()
+
+  if (!token && pathName === 'password') {
+    navigate('/error')
+  }
+}
+
+const callAPI = async (data, pathName) => {
+  try {
+    const cryptoPassword = await crypto.cryptoPassword(data.password)
+    let cryptoNewPassword = ''
+
+    switch (pathName) {
+      case CONSTANTS.PATH_SIGN_IN:
+        await service.getSignInStatus(data.email, cryptoPassword)
+        break
+      case CONSTANTS.PATH_SIGN_UP:
+        await service.getSignUpStatus(data.email, cryptoPassword)
+        break
+      case CONSTANTS.PATH_PASSWORD:
+        cryptoNewPassword = await crypto.cryptoPassword(data.newPassword)
+
+        await service.getUpdatePasswordStatus(cryptoNewPassword, cryptoPassword)
+        await jwt.clearLocalStorageItem()
+        break
+    }
+  } catch (error) {
+    const errorVal = Datas.errorMessages.find(
+      (errors) =>
+        errors.path === pathName && error.message.endsWith(errors.code),
+    )
+
+    openToast(errorVal.message)
+
+    return error
+  }
+}
+
 export const SignPage: FPC = () => {
   const locationHook = useLocation()
+  const navigate = useNavigate()
   const methods = useForm()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -36,20 +95,14 @@ export const SignPage: FPC = () => {
   const [inputDatas, setInputDatas] = useState<Inputs[]>([])
   const [hasErrors, setHasErrors] = useState<object[]>([])
 
-  const navigate = useNavigate()
-
   const getValidationErrors = (error: any) => {
-    let copyHasErrors: object[] = [...hasErrors]
+    // eslint-disable-next-line prefer-destructuring
     const key = Object.keys(error)[0]
-    if (
-      copyHasErrors.length !== 0 &&
-      copyHasErrors.filter((data) => data.hasOwnProperty(key)).length !== 0
-    ) {
-      copyHasErrors.map((data) => {
-        if (Object.keys(data)[0] === key) {
-          data[key] = error[key]
-        }
-      })
+    let copyHasErrors: object[] = [...hasErrors]
+
+    // eslint-disable-next-line no-prototype-builtins
+    if (copyHasErrors.some((data) => data.hasOwnProperty(key))) {
+      copyHasErrors = ReplaceArrayItem(copyHasErrors, key, error)
     } else {
       copyHasErrors.push(error)
     }
@@ -58,54 +111,20 @@ export const SignPage: FPC = () => {
   }
 
   useEffect(() => {
-    if (hasErrors.length !== 0 && hasErrors.length === inputDatas.length) {
-      if (
-        hasErrors.filter((error) => Object.values(error)[0] === true).length ===
-        0
-      ) {
-        setIsSubmit(true)
-      } else {
-        setIsSubmit(false)
-      }
+    const cntError = hasErrors.filter(
+      (error) => Object.values(error)[0] === true,
+    ).length
+
+    if (
+      hasErrors.length > 0 &&
+      hasErrors.length === inputDatas.length &&
+      cntError === 0
+    ) {
+      setIsSubmit(true)
+    } else {
+      setIsSubmit(false)
     }
   }, [hasErrors])
-
-  const onSubmit: SubmitHandler<RestSignUpReq> = async (data) => {
-    const cryptoPassword = await crypto.cryptoPassword(data.password)
-    const cryptoNewPassword = await crypto.cryptoPassword(data.newPassword)
-    let errorVal = null
-
-    setIsLoading(true)
-
-    try {
-      switch (pathName) {
-        case CONSTANTS.PATH_SIGN_IN:
-          await service.getSignInStatus(data.email, cryptoPassword)
-          break
-        case CONSTANTS.PATH_SIGN_UP:
-          await service.getSignUpStatus(data.email, cryptoPassword)
-          break
-        case CONSTANTS.PATH_PASSWORD:
-          await service.getUpdatePasswordStatus(
-            cryptoPassword,
-            cryptoNewPassword,
-          )
-          await jwt.clearLocalStorageItem()
-          break
-      }
-
-      navigate('/')
-    } catch (error) {
-      errorVal = Datas.errorMessages.filter(
-        (errors) =>
-          errors.path === pathName && error.message.endsWith(errors.code),
-      )
-
-      openToast(errorVal[0].message)
-    }
-
-    setIsLoading(false)
-  }
 
   useEffect(() => {
     const splitUrl = locationHook?.pathname?.split('/') ?? null
@@ -126,6 +145,18 @@ export const SignPage: FPC = () => {
       }
     }
   }, [pathName])
+
+  const onSubmit: SubmitHandler<RestSignUpReq> = async (data) => {
+    setIsLoading(true)
+
+    const error = await callAPI(data, pathName)
+
+    if (!error) {
+      navigate('/')
+    }
+
+    setIsLoading(false)
+  }
 
   return (
     <FormProvider {...methods}>
@@ -154,8 +185,7 @@ export const SignPage: FPC = () => {
                 : 'UPDATE PASSWORD'
             }
             type="submit"
-            isDisabled={isSubmit === true ? false : true}
-            //isDisabled={true}
+            isDisabled={isSubmit !== true}
           />
         </Container>
       </form>
